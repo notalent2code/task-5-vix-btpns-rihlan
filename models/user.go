@@ -12,13 +12,22 @@ import (
 )
 
 type User struct {
-	ID       string `gorm:"primary_key;unique" json:"id"`
-	Username string `gorm:"size:50;not null;unique" json:"username"`
-	Email    string `gorm:"size:50;not null;unique" json:"email"`
-	Password string `gorm:"size:100;not null;" json:"password"`
-	Photos Photo `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"photos"`
+	ID        string    `gorm:"primary_key;unique" json:"id"`
+	Username  string    `gorm:"size:50;not null;unique" json:"username"`
+	Email     string    `gorm:"size:50;not null;unique" json:"email"`
+	Password  string    `gorm:"size:100;not null;" json:"password"`
+	Photos    Photo     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"photos"`
 	CreatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"updated_at"`
+}
+
+func (u *User) HashPassword() error {
+	hashedPassword, err := hash.Hash(u.Password)
+	if err != nil {
+		return err
+	}
+	u.Password = string(hashedPassword)
+	return nil
 }
 
 func (u *User) CheckPassword(password string) error {
@@ -44,7 +53,7 @@ func (u *User) Validate(action string) error {
 			return errors.New("invalid email")
 		}
 		return nil
-	case "register" :
+	case "register":
 		if u.ID == "" {
 			return errors.New("required id")
 		}
@@ -64,7 +73,7 @@ func (u *User) Validate(action string) error {
 			return errors.New("password is too short")
 		}
 		return nil
-	case "update" :
+	case "update":
 		if u.ID == "" {
 			return errors.New("required id")
 		}
@@ -88,4 +97,3 @@ func (u *User) Validate(action string) error {
 		return errors.New("invalid Action")
 	}
 }
-

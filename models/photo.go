@@ -9,12 +9,12 @@ import (
 )
 
 type Photo struct {
-	ID        uint64 `gorm:"primary_key;auto_increment" json:"id"`
-	Title     string `gorm:"size:100;not null;" json:"title"`
-	Caption string `gorm:"size:255;not null;" json:"caption"`
-	PhotoURL string `gorm:"size:255;not null;" json:"photo_url"`
-	UserID    uint64 `gorm:"not null" json:"user_id"`
-	Author app.Author `gorm:"author"`
+	ID       uint64     `gorm:"primary_key;auto_increment" json:"id"`
+	Title    string     `gorm:"size:100;not null;" json:"title"`
+	Caption  string     `gorm:"size:255;not null;" json:"caption"`
+	PhotoURL string     `gorm:"size:255;not null;" json:"photo_url"`
+	UserID   string     `gorm:"not null" json:"user_id"`
+	Author   app.Author `gorm:"author"`
 }
 
 func (p *Photo) Initialize() {
@@ -35,7 +35,7 @@ func (p *Photo) Validate(action string) error {
 		if p.PhotoURL == "" {
 			return errors.New("required photoURL")
 		}
-		if p.UserID < 1 {
+		if p.UserID == "" {
 			return errors.New("required userID")
 		}
 		return nil
@@ -49,7 +49,7 @@ func (p *Photo) Validate(action string) error {
 		if p.PhotoURL == "" {
 			return errors.New("required photoURL")
 		}
-		if p.UserID < 1 {
+		if p.UserID == "" {
 			return errors.New("required userID")
 		}
 		return nil
